@@ -17,6 +17,7 @@ const AddTask = () => {
 		await addTodo({
 			id: uuidv4(),
 			text: newTaskValue,
+			check: false,
 		});
 
 		setNewTaskValue('');

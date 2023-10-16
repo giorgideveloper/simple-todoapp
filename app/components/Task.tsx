@@ -1,6 +1,6 @@
 'use client';
 import { ITask } from '@/types/tasks';
-import { FormEventHandler, useState } from 'react';
+import { ChangeEventHandler, FormEventHandler, useState } from 'react';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import Modal from './Modal';
 import { useRouter } from 'next/navigation';
@@ -15,6 +15,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
 	const [modalOpen, setModalOpen] = useState<boolean>(false);
 	const [modalOpenDeleted, setModalOpenDeleted] = useState<boolean>(false);
 	const [taskToEdit, setTaskToEdit] = useState<string>(task.text);
+	const [taskCheck, setTaskCheck] = useState<boolean>(false);
 
 	const handelSubmitEditTodo: FormEventHandler<HTMLFormElement> = async e => {
 		e.preventDefault();
@@ -22,6 +23,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
 		await editTodo({
 			id: task.id,
 			text: taskToEdit,
+			check: false,
 		});
 
 		setModalOpen(false);
@@ -33,9 +35,32 @@ const Task: React.FC<TaskProps> = ({ task }) => {
 		setModalOpenDeleted(false);
 		Router.refresh();
 	};
+
+	const handleCheckTodo = async (e: boolean) => {
+		await editTodo({
+			id: task.id,
+			text: taskToEdit,
+			check: e,
+		});
+		Router.refresh();
+	};
 	return (
 		<tr>
-			<td className='w-full'>{task.text}</td>
+			<th>
+				<label>
+					<input
+						onChange={e => handleCheckTodo(e.target.checked)}
+						type='checkbox'
+						className='checkbox'
+					/>
+				</label>
+			</th>
+			{task.check ? (
+				<td className='w-full line-through'>{task.text}</td>
+			) : (
+				<td className='w-full '>{task.text}</td>
+			)}
+
 			<td className='flex gap-5'>
 				<FiEdit
 					onClick={() => setModalOpen(true)}
